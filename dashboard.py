@@ -1,4 +1,6 @@
 import tkinter
+from product import product
+from category import category
 
 class dashboard:
     def __init__(self):

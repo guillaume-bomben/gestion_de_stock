@@ -13,7 +13,11 @@ class product:
         query = "SELECT * FROM product"
         for line in self.data.fetch(query):
             print(f"id : {line[0]}")
-            print(f"category : {line[1]}")
+            print(f"name : {line[1]}")
+            print(f"description : {line[2]}")
+            print(f"price : {line[3]}")
+            print(f"quantity : {line[4]}")
+            print(f"id_category : {line[5]}")
     
     def update_name(self,id,name):
         query = "UPDATE product SET name = %s WHERE id = %s"
