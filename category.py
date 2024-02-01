@@ -1,8 +1,6 @@
-from Database import Database
-
-class category:
-    def __init__(self,host,user,password,database):
-        self.data = Database(host,user,password,database)
+class Category:
+    def __init__(self,database):
+        self.data = database
     
     def create(self,category):
         query = "INSERT INTO category (name) VALUES (%s)"

@@ -1,8 +1,8 @@
-from Database import Database
-
-class product:
-    def __init__(self,host,user,password,database):
-        self.data = Database(host,user,password,database)
+class Product:
+    def __init__(self,database):
+        self.data = database
+        self.data_list = []
+        self.read()
     
     def create(self,name,description,price,quantity,id_category):
         query = "INSERT INTO product (name,description,price,quantity,id_category) VALUES (%s,%s,%s,%s,%s)"
@@ -11,13 +11,9 @@ class product:
     
     def read(self):
         query = "SELECT * FROM product"
+        self.data_list = []
         for line in self.data.fetch(query):
-            print(f"id : {line[0]}")
-            print(f"name : {line[1]}")
-            print(f"description : {line[2]}")
-            print(f"price : {line[3]}")
-            print(f"quantity : {line[4]}")
-            print(f"id_category : {line[5]}")
+            self.data_list.append(line)
     
     def update_name(self,id,name):
         query = "UPDATE product SET name = %s WHERE id = %s"

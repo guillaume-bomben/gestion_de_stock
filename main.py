@@ -1,10 +1,3 @@
-import getpass
-from category import category
+from Dashboard import dashboard
 
-password = getpass.getpass("Entrez un mdp : ")
-data = category("localhost","root",password,"store")
-
-
-data.create("test")
-
-
+dash = dashboard()
