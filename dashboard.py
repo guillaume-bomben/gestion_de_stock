@@ -1,5 +1,6 @@
 import tkinter
 from tkinter import simpledialog
+from tkinter import ttk
 from tkinter.ttk import *
 from Product import Product
 from Category import Category
@@ -15,9 +16,10 @@ class dashboard:
         self.windows.minsize(600,400)
         self.windows.withdraw()
         self.input_mdp()
-        tkinter.Button(self.windows, text="Ajouter", command=self.add).pack(padx=10, pady=10)
-        tkinter.Button(self.windows, text="Modifier", command=self.update).pack(padx=10, pady=10)
-        tkinter.Button(self.windows, text="Supprimer", command=self.delete).pack(padx=10, pady=10)
+        tkinter.Button(self.windows, text="Ajouter produit", command=self.add_product).grid(row=0, column=0, padx=10, pady=10)
+        tkinter.Button(self.windows, text="Modifier", command=self.update).grid(row=0, column=1, padx=10, pady=10)
+        tkinter.Button(self.windows, text="Supprimer", command=self.delete).grid(row=0, column=2, padx=10, pady=10)
+        tkinter.Button(self.windows, text="Ajouter category", command=self.add_category).grid(row=0, column=3, padx=10, pady=10)
         
         ##########################################
         #---------------tableau------------------#
@@ -42,7 +44,7 @@ class dashboard:
         self.tableau.column("category", width=100)
         
         self.tableau['show'] = 'headings'
-        self.tableau.pack(padx = 10, pady = 25)
+        self.tableau.grid(row=1, column=0, columnspan=4, padx=10, pady=10)
 
         self.list_product()
         self.windows.mainloop()
@@ -64,9 +66,12 @@ class dashboard:
             print("Aucun mot de passe saisi.")
 
 
-    def add(self):
+    def add_product(self):
         popup = tkinter.Toplevel(self.windows)
         popup.minsize(300,350)
+        list_category = []
+        for line in self.category.data_list:
+            list_category.append(line[1])
         
         ##########################################
         #-----------------input------------------#
@@ -88,10 +93,11 @@ class dashboard:
         saisie_quantity.pack(pady=10)
         
         tkinter.Label(popup, text="ID Category").pack()
-        saisie_id_category = tkinter.Entry(popup)
-        saisie_id_category.pack(pady=10)
+        saisie_category = ttk.Combobox(popup,values=list_category)
+        saisie_category.pack(pady=10)
+
         
-        tkinter.Button(popup, text="Valider", command=lambda: self.create_product(saisie_name.get(),saisie_description.get(),int(saisie_price.get()),int(saisie_quantity.get()),int(saisie_id_category.get()))).pack()
+        tkinter.Button(popup, text="Valider", command=lambda: self.create_product(saisie_name.get(),saisie_description.get(),int(saisie_price.get()),int(saisie_quantity.get()),self.category.get_id(saisie_category.get()))).pack()
 
 
     def create_product(self, name, description, price, quantity, id_category):
@@ -104,7 +110,7 @@ class dashboard:
         for child in self.tableau.get_children():
             self.tableau.delete(child)
         for line in self.product.data_list:
-            self.tableau.insert('', 'end', iid=line[0], values=(line[0], line[1], line[2], line[3], line[4], line[5]), tag="centered")
+            self.tableau.insert('', 'end', iid=line[0], values=(line[0], line[1], line[2], line[3], line[4], self.category.get_category(line[5])), tag="centered")
         for col in self.tableau["columns"]:
             self.tableau.tag_configure("centered", anchor="center")
             self.tableau.column(col, anchor="center")
@@ -118,6 +124,9 @@ class dashboard:
             tkinter.messagebox.showwarning("Avertissement", "Veuillez sélectionner un produit à modifier.")
             return
         
+        list_category = []
+        for line in self.category.data_list:
+            list_category.append(line[1])
         info = self.tableau.item(self.tableau.selection())['values']
         id = info[0]
         
@@ -145,11 +154,11 @@ class dashboard:
         saisie_quantity.pack(pady=10)
         
         tkinter.Label(popup, text="ID Category").pack()
-        saisie_id_category = tkinter.Entry(popup)
-        saisie_id_category.insert(0,info[5])
-        saisie_id_category.pack(pady=10)
+        saisie_category = ttk.Combobox(popup,values=list_category)
+        saisie_category.insert(0,info[5])
+        saisie_category.pack(pady=10)
         
-        tkinter.Button(popup, text="Valider", command=lambda: self.update_product(id,saisie_name.get(),saisie_description.get(),int(saisie_price.get()),int(saisie_quantity.get()),int(saisie_id_category.get()))).pack()
+        tkinter.Button(popup, text="Valider", command=lambda: self.update_product(id,saisie_name.get(),saisie_description.get(),int(saisie_price.get()),int(saisie_quantity.get()),self.category.get_id(saisie_category.get()))).pack()
 
 
     def update_product(self,id, name, description, price, quantity, id_category):
@@ -171,3 +180,17 @@ class dashboard:
         self.product.delete(id)
         self.product.read()
         self.list_product()
+
+    def add_category(self):
+        popup = tkinter.Toplevel(self.windows)
+        popup.minsize(300,150)
+        
+        ##########################################
+        #-----------------input------------------#
+        ##########################################
+        tkinter.Label(popup, text="Nom").pack()
+        saisie_name = tkinter.Entry(popup)
+        saisie_name.pack(pady=10)
+        
+        tkinter.Button(popup, text="Valider", command=lambda: self.category.create(saisie_name.get())).pack()
+        
